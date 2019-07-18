@@ -42,4 +42,9 @@
     <string name="Open">Open</string>
     <string name="Close">Close</string>
     <string name="find_your_van">FIND YOUR VAN</string>
+    <string name="start_new_session">START NEW SESSION</string>
+    <string name="start_session">Start Session</string>
+    <string name="select_route_and_vehicle_to_start">Select route and vehicle to start</string>
+    <string name="vehicle_information">Vehicle Information</string>
+    <string name="routes">Routes</string>
 </resources>

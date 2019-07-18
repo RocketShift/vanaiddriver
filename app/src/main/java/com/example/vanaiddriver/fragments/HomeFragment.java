@@ -2,6 +2,7 @@ package com.example.vanaiddriver.fragments;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -19,8 +20,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.vanaiddriver.R;
+import com.example.vanaiddriver.StartSession;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -65,7 +68,7 @@ import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -80,7 +83,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private Boolean mLocationPermissionGranted = false;
     private Location mLastKnownLocation;
     private GoogleMap googleMap;
-    private Marker pickupMarker;
+    private Button startSession;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -117,53 +120,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
+        startSession = (Button) rootView.findViewById(R.id.startSession);
+        startSession.setOnClickListener(this);
         initMap();
-        if (!Places.isInitialized()) {
-            Places.initialize(getActivity(), getString(R.string.google_maps_key), Locale.getDefault());
-        }
-        // Initialize the AutocompleteSupportFragment.
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-
-        // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-        autocompleteFragment.setLocationRestriction(RectangularBounds.newInstance(
-                new LatLng(15.932911, 119.944304),
-                new LatLng(18.342771, 121.046823)
-        ));
-
-        // Set up a PlaceSelectionListener to handle the response.
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                try {
-                    Geocoder geocoder;
-                    List<Address> addresses;
-                    geocoder = new Geocoder(getActivity(), Locale.getDefault());
-
-                    addresses = geocoder.getFromLocationName(place.getName(), 1);
-
-                    com.google.maps.model.LatLng center = new com.google.maps.model.LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                    SnappedPoint[] points = RoadsApi.snapToRoads(getGeoContext(), true, center).await();
-                    if(points != null){
-                        pickupMarker.setPosition(new LatLng(points[0].location.lat, points[0].location.lng));
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(points[0].location.lat, points[0].location.lng), 20));
-                    }
-                } catch (ApiException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-                Log.i(TAG, "An error occurred: " + status);
-            }
-        });
 
         return rootView;
     }
@@ -193,23 +152,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
     @Override
-    public void onCameraMove() {
-        pickupMarker.setPosition(googleMap.getCameraPosition().target);
-    }
-
-    @Override
-    public void onCameraIdle() {
-        try {
-            SnappedPoint[] points = RoadsApi.snapToRoads(getGeoContext(), true, new com.google.maps.model.LatLng(googleMap.getCameraPosition().target.latitude, googleMap.getCameraPosition().target.longitude)).await();
-            if(points != null){
-                pickupMarker.setPosition(new LatLng(points[0].location.lat, points[0].location.lng));
-            }
-        } catch (ApiException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void onClick(View view) {
+        if(view.equals(startSession)){
+            Intent startStartSessionActivity = new Intent(getActivity(), StartSession.class);
+            startActivity(startStartSessionActivity);
         }
     }
 
@@ -268,9 +214,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         if (mLocationPermissionGranted) {
             updateMap();
         }
-
-        googleMap.setOnCameraMoveListener(this);
-        googleMap.setOnCameraIdleListener(this);
 //                LatLng orig = new LatLng(16.5542868,120.3232215);
 //                LatLng dest = new LatLng(16.6169121,120.31527);
 //                String o = orig.latitude + "," +  orig.longitude;
@@ -331,8 +274,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     public void setMapCenter(){
         try {
             SnappedPoint[] points = RoadsApi.snapToRoads(getGeoContext(), true, new com.google.maps.model.LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude())).await();
-            pickupMarker = googleMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(points[0].location.lat, points[0].location.lng)));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(points[0].location.lat, points[0].location.lng), 15));
         } catch (ApiException e) {
             e.printStackTrace();

@@ -81,6 +81,7 @@ public class Login extends AppCompatActivity {
                             String access_token = response.getString("access_token");
                             SharedPreferences.Editor editor = getSharedPreferences(Requestor.SHARED_REFERENCES, MODE_PRIVATE).edit();
                             editor.putString("access_token", access_token);
+                            editor.putString("username", etUsername.getText().toString());
                             editor.apply();
 
                             Intent main = new Intent(getApplicationContext(), MainActivity.class);
