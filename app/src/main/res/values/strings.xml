@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">VanAid</string>
+    <string name="splashscreen_text">BOOK A LEGITIMATE VAN TRANSPORTATION</string>
+    <string name="login_maintext">Yet Another Ridesharing App</string>
+    <string name="login_edittext1">Username</string>
+    <string name="login_edittext2">Password</string>
+    <string name="login_bttext">Login</string>
+    <string name="login_text1">OR</string>
+    <string name="login_text2">Sign Up</string>
+    <string name="signup_text1">Create\n Your Account</string>
+    <string name="signup_text2">Full Name</string>
+    <string name="signup_text3">Email Address</string>
+    <string name="signup_text4">Mobile Phone</string>
+    <string name="signup_text5">Password</string>
+    <string name="signup_text6">Confirm Password</string>
+    <string name="signup_text7">Next</string>
+    <string name="signup2_text1">Payment</string>
+    <string name="signup2_text2">or</string>
+    <string name="signup2_text3">CreditCard/DebitCard Number</string>
+    <string name="signup2_text4">Name on Card</string>
+    <string name="signup2_text5">Security Code</string>
+    <string name="signup2_text6">MM/YY</string>
+    <string name="signup2_text7">By Clicking SUBMIT button, you are agreeing to the</string>
+    <string name="signup2_text8"><u>Terms and Conditions</u></string>
+    <string name="signup2_text9">of this mobile app and company services</string>
+    <string name="signup2_text10">Submit</string>
+    <string name="home_text1">TXI</string>
+    <string name="home_text2">BLK</string>
+    <string name="home_text3">BY</string>
+
+    <string name="passenger_text1">Passenger Details</string>
+    <string name="passenger_text2">Passenger Ratings</string>
+    <string name="passenger_text3">Logout</string>
+    <string name="address">Address</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="signup_successful">Signup Successful!</string>
+    <string name="cannowlogin">You can now login using you\'re chosen username.</string>
+    <string name="ok">OK</string>
+    <string name="invalidusernameorpassword">Invalid username or password</string>
+    <string name="pleasetryagain">Please try again</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="Open">Open</string>
+    <string name="Close">Close</string>
+    <string name="find_your_van">FIND YOUR VAN</string>
+</resources>
