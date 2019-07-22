@@ -1,8 +1,10 @@
 package com.example.vanaiddriver.classes;
 
+import java.io.Serializable;
 import java.sql.Array;
+import java.util.ArrayList;
 
-public class RouteModel {
+public class RouteModel implements Serializable {
     public String getName() {
         return name;
     }
@@ -57,4 +59,23 @@ public class RouteModel {
     public String origin_lng;
     public String destination_lat;
     public String detination_lng;
+    public Integer company_id;
+
+    public Integer getCompany_id() {
+        return company_id;
+    }
+
+    public void setCompany_id(Integer company_id) {
+        this.company_id = company_id;
+    }
+
+    public ArrayList getWaypoints() {
+        return waypoints;
+    }
+
+    public void setWaypoints(ArrayList waypoints) {
+        this.waypoints = waypoints;
+    }
+
+    public ArrayList waypoints;
 }

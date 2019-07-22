@@ -3,10 +3,13 @@ package com.example.vanaiddriver;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,6 +31,7 @@ import java.util.List;
 public class SelectRoute extends AppCompatActivity {
     private ListView lvRoutes;
     private RouteAdapter routeAdapter;
+    private List<RouteModel> routes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +49,19 @@ public class SelectRoute extends AppCompatActivity {
                     Gson gson = new Gson();
                     String jsonOutput = response.getJSONArray("routes").toString();
                     Type listType = new TypeToken<List<RouteModel>>(){}.getType();
-                    List<RouteModel> posts = gson.fromJson(jsonOutput, listType);
-                    routeAdapter = new RouteAdapter(getApplicationContext(), R.layout.route_item, posts);
+                    routes = gson.fromJson(jsonOutput, listType);
+                    routeAdapter = new RouteAdapter(getApplicationContext(), R.layout.route_item, routes);
                     lvRoutes.setAdapter(routeAdapter);
+
+                    lvRoutes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            Intent data = new Intent();
+                            data.putExtra("route", routes.get(i));
+                            setResult(RESULT_OK,data);
+                            finish();
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

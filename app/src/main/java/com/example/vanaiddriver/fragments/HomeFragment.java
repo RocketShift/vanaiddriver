@@ -274,7 +274,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     public void setMapCenter(){
         try {
             SnappedPoint[] points = RoadsApi.snapToRoads(getGeoContext(), true, new com.google.maps.model.LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude())).await();
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(points[0].location.lat, points[0].location.lng), 15));
+            if(points != null){
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(points[0].location.lat, points[0].location.lng), 15));
+            }else{
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), 15));
+            }
         } catch (ApiException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
