@@ -81,7 +81,7 @@
                 android:id="@+id/tvRouteName"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Tap to select route."
+                android:text="@string/tap_to_select_route"
                 android:paddingLeft="90dp"
                 android:paddingTop="38dp"
                 android:paddingRight="50dp"
@@ -126,6 +126,7 @@
                 android:layout_alignParentRight="true"
                 android:src="@drawable/ic_verfied"/>
             <TextView
+                android:id="@+id/tvVehiclePlate"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/vehicle_information"
@@ -136,21 +137,12 @@
                 android:textSize="18sp"/>
                 />
             <TextView
+                android:id="@+id/tvVehicleColor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="San Fernando City, La Union -"
+                android:text="@string/tap_to_select_vehicle"
                 android:paddingLeft="90dp"
                 android:paddingTop="38dp"
-                android:fontFamily="@font/nunito_sans_regular"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="15sp"
-                />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Candon, Ilocos Sur"
-                android:paddingLeft="90dp"
-                android:paddingTop="58dp"
                 android:fontFamily="@font/nunito_sans_regular"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="15sp"
@@ -181,6 +173,7 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"

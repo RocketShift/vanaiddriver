@@ -47,4 +47,9 @@
     <string name="select_route_and_vehicle_to_start">Select route and vehicle to start</string>
     <string name="vehicle_information">Vehicle Information</string>
     <string name="routes">Routes</string>
+    <string name="tap_to_select_route">Tap to select route.</string>
+    <string name="tap_to_select_vehicle">Tap to select vehicle</string>
+    <string name="routeisrequired">Route Information is required.</string>
+    <string name="vehicleisrequired">Vehicle information is required.</string>
+    <string name="vehicles">Vehicles</string>
 </resources>

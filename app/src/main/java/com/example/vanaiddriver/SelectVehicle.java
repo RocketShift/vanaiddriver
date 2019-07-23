@@ -14,7 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.vanaiddriver.classes.Requestor;
-import com.example.vanaiddriver.classes.RouteModel;
+import com.example.vanaiddriver.classes.VehicleModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -24,39 +24,39 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class SelectRoute extends AppCompatActivity {
-    private ListView lvRoutes;
-    private RouteAdapter routeAdapter;
-    private List<RouteModel> routes;
+public class SelectVehicle extends AppCompatActivity {
+    private ListView lvVehicles;
+    private SelectVehicle.VehicleAdapter vehicleAdapter;
+    private List<VehicleModel> vehicles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_route);
+        setContentView(R.layout.activity_select_vehicle);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        lvRoutes = (ListView)findViewById(R.id.lvRoutes);
+        lvVehicles = (ListView)findViewById(R.id.lvVehicles);
 
 
-        Requestor getRoutes = new Requestor("api/routes", null, this){
+        Requestor getVehicles = new Requestor("api/vehicles", null, this){
             @Override
             public void postExecute(JSONObject response){
 
                 try {
                     Gson gson = new Gson();
-                    String jsonOutput = response.getJSONArray("routes").toString();
-                    Type listType = new TypeToken<List<RouteModel>>(){}.getType();
-                    routes = gson.fromJson(jsonOutput, listType);
-                    routeAdapter = new RouteAdapter(getApplicationContext(), R.layout.route_item, routes);
-                    lvRoutes.setAdapter(routeAdapter);
+                    String jsonOutput = response.getJSONArray("vehicles").toString();
+                    Type listType = new TypeToken<List<VehicleModel>>(){}.getType();
+                    vehicles = gson.fromJson(jsonOutput, listType);
+                    vehicleAdapter = new SelectVehicle.VehicleAdapter(getApplicationContext(), R.layout.vehicle_item, vehicles);
+                    lvVehicles.setAdapter(vehicleAdapter);
 
-                    lvRoutes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    lvVehicles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             Intent data = new Intent();
-                            data.putExtra("route", routes.get(i));
+                            data.putExtra("vehicle", vehicles.get(i));
                             setResult(RESULT_OK,data);
                             finish();
                         }
@@ -67,7 +67,7 @@ public class SelectRoute extends AppCompatActivity {
             }
         };
 
-        getRoutes.execute();
+        getVehicles.execute();
     }
 
     @Override
@@ -76,38 +76,41 @@ public class SelectRoute extends AppCompatActivity {
         return true;
     }
 
-    public class RouteAdapter extends ArrayAdapter {
-        private List<RouteModel> routeModel;
+    public class VehicleAdapter extends ArrayAdapter {
+        private List<VehicleModel> vehicleModel;
         private int resource;
         private LayoutInflater inflater;
 
 
-        public RouteAdapter(Context context, int resource, List<RouteModel> objects) {
+        public VehicleAdapter(Context context, int resource, List<VehicleModel> objects) {
             super(context, resource, objects);
-            this.routeModel = objects;
+            this.vehicleModel = objects;
             this.resource = resource;
             inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
+            SelectVehicle.VehicleAdapter.ViewHolder holder = null;
             if(convertView == null){
-                holder = new ViewHolder();
+                holder = new SelectVehicle.VehicleAdapter.ViewHolder();
                 convertView = inflater.inflate(resource, null);
-                holder.tvRouteName = (TextView)convertView.findViewById(R.id.tvRouteName);
+                holder.tvPlateNo = (TextView)convertView.findViewById(R.id.tvPlateNo);
+                holder.tvColor = (TextView)convertView.findViewById(R.id.tvColor);
                 convertView.setTag(holder);
             }else{
-                holder = (ViewHolder)convertView.getTag();
+                holder = (SelectVehicle.VehicleAdapter.ViewHolder)convertView.getTag();
             }
 
-            holder.tvRouteName.setText(routeModel.get(position).getName());
+            holder.tvPlateNo.setText(vehicleModel.get(position).getPlate_no());
+            holder.tvColor.setText(vehicleModel.get(position).getColor());
 
             return convertView;
         }
 
         class ViewHolder{
-            private TextView tvRouteName;
+            private TextView tvPlateNo;
+            private TextView tvColor;
         }
     }
 }

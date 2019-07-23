@@ -1,7 +1,6 @@
 package com.example.vanaiddriver.classes;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -161,10 +160,6 @@ public class Requestor {
             try {
                 SharedPreferences sharedPreferences = context.getSharedPreferences(Requestor.SHARED_REFERENCES, MODE_PRIVATE);
                 String access_token = sharedPreferences.getString("access_token", null);
-                String username = sharedPreferences.getString("username", null);
-                if(access_token != null){
-                    param.put("username", username);
-                }
 
                 byte[] postDataBytes = urlParams(param);
                 java.net.URL urlj = new URL(url);
@@ -172,7 +167,11 @@ public class Requestor {
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
                 connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
-                connection.setRequestProperty("Authorization", "Bearer " + access_token);
+
+                if(access_token != null){
+                    connection.setRequestProperty("Authorization", "Bearer " + access_token);
+                }
+
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
                 connection.getOutputStream().write(postDataBytes);

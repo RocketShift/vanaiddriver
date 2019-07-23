@@ -24,8 +24,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".SelectRoute"
-            android:label="@string/routes"></activity>
+        <activity android:name=".SelectVehicle"
+            android:label="@string/vehicles"></activity>
+        <activity
+            android:name=".SelectRoute"
+            android:label="@string/routes" />
         <activity
             android:name=".StartSession"
             android:theme="@style/AppTheme.NoActionBar" />
