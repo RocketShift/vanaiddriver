@@ -6,13 +6,27 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.vanaiddriver.classes.Requestor;
 import com.example.vanaiddriver.classes.RouteModel;
+import com.example.vanaiddriver.classes.SessionModel;
 import com.example.vanaiddriver.classes.VehicleModel;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class StartSession extends AppCompatActivity implements View.OnClickListener {
     public View account_route_info;
@@ -70,7 +84,66 @@ public class StartSession extends AppCompatActivity implements View.OnClickListe
                             }
                         });
                 alertDialog.show();
+            }else{
+                Map<String, Object> param = new LinkedHashMap<>();
+                param.put("route_id", route.getId());
+                param.put("vehicle_id", vehicle.getId());
+
+                Requestor sessionRequest = new Requestor("api/sessions/store", param, this){
+                    @Override
+                    public void preExecute() {
+                        btnStart.setText(R.string.please_wait);
+                    }
+
+                    @Override
+                    public void postExecute(final JSONObject response) {
+                        btnStart.setText(R.string.start_new_session);
+
+                        try {
+                            String error = response.getString("error");
+                            Log.e("Error", error);
+                            alertDialog.setTitle(error);
+                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getApplicationContext().getString(R.string.ok),
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                            saveSession(response);
+                                        }
+                                    });
+                            alertDialog.show();
+                        } catch (JSONException e) {
+                            saveSession(response);
+                        }
+                    }
+                };
+
+                sessionRequest.execute();
             }
+        }
+    }
+
+    public void saveSession(JSONObject response){
+        Gson gson = new Gson();
+        String jsonOutput = null;
+        try {
+            jsonOutput = response.getJSONArray("session").toString();
+            Type listType = new TypeToken<List<VehicleModel>>(){}.getType();
+            SessionModel sessionModel = gson.fromJson(jsonOutput, listType);
+
+            sessionModel.setRoute(route);
+
+            Gson gson2 = new Gson();
+            String json = gson2.toJson(sessionModel);
+            SharedPreferences.Editor editor = getSharedPreferences(Requestor.SHARED_REFERENCES, MODE_PRIVATE).edit();
+            editor.putString("session", json);
+            editor.apply();
+
+            Intent data = new Intent();
+            data.putExtra("session", sessionModel);
+            setResult(RESULT_OK,data);
+            finish();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 

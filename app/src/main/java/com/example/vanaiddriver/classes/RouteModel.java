@@ -1,10 +1,30 @@
 package com.example.vanaiddriver.classes;
 
 import java.io.Serializable;
-import java.sql.Array;
 import java.util.ArrayList;
 
 public class RouteModel implements Serializable {
+    private Integer id;
+    private String name;
+    private String description;
+    private String origin_lat;
+    private String origin_lng;
+    private String destination_lat;
+    private String detination_lng;
+    private Integer company_id;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getCompany_id() {
+        return company_id;
+    }
+
     public String getName() {
         return name;
     }
@@ -51,18 +71,6 @@ public class RouteModel implements Serializable {
 
     public void setDetination_lng(String detination_lng) {
         this.detination_lng = detination_lng;
-    }
-
-    public String name;
-    public String description;
-    public String origin_lat;
-    public String origin_lng;
-    public String destination_lat;
-    public String detination_lng;
-    public Integer company_id;
-
-    public Integer getCompany_id() {
-        return company_id;
     }
 
     public void setCompany_id(Integer company_id) {

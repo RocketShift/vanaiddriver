@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -24,6 +25,8 @@ import android.widget.Button;
 
 import com.example.vanaiddriver.R;
 import com.example.vanaiddriver.StartSession;
+import com.example.vanaiddriver.classes.RouteModel;
+import com.example.vanaiddriver.classes.SessionModel;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -35,6 +38,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.LocationRestriction;
@@ -46,6 +50,7 @@ import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeolocationApi;
 import com.google.maps.RoadsApi;
+import com.google.maps.android.PolyUtil;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.SnappedPoint;
@@ -58,6 +63,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import static android.app.Activity.RESULT_OK;
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
@@ -84,8 +90,48 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     private Location mLastKnownLocation;
     private GoogleMap googleMap;
     private Button startSession;
+    private SessionModel sessionModel;
     public HomeFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                sessionModel = (SessionModel) data.getExtras().getSerializable("session");
+
+                try {
+                    String waypoints = "";
+                    for (int i = 0; i < sessionModel.getRoute().getWaypoints().size(); i++) {
+                        if(i == sessionModel.getRoute().getWaypoints().size() - 1){
+                            waypoints = waypoints + sessionModel.getRoute().getWaypoints().get(i);
+                        }else{
+                            waypoints = waypoints + sessionModel.getRoute().getWaypoints().get(i) + ",";
+                        }
+                    }
+
+                    DirectionsResult result = DirectionsApi.newRequest(getGeoContext())
+                            .mode(TravelMode.DRIVING)
+                            .origin(sessionModel.getRoute().getOrigin_lat() + "," + sessionModel.getRoute().getOrigin_lng())
+                            .destination(sessionModel.getRoute().getDestination_lat() + "," + sessionModel.getRoute().getDetination_lng())
+                            .waypoints(waypoints)
+                            .departureTime(new DateTime())
+                            .await();
+
+                    List<LatLng> decodedPath = PolyUtil.decode(result.routes[0].overviewPolyline.getEncodedPath());
+                    googleMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+                } catch (ApiException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**
@@ -155,7 +201,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     public void onClick(View view) {
         if(view.equals(startSession)){
             Intent startStartSessionActivity = new Intent(getActivity(), StartSession.class);
-            startActivity(startStartSessionActivity);
+            getActivity().startActivityForResult(startStartSessionActivity, 1);
         }
     }
 
