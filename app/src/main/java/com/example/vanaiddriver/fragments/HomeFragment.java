@@ -30,12 +30,14 @@ import com.example.vanaiddriver.classes.SessionModel;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -47,6 +49,7 @@ import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.maps.DirectionsApi;
+import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeolocationApi;
 import com.google.maps.RoadsApi;
@@ -104,25 +107,33 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 sessionModel = (SessionModel) data.getExtras().getSerializable("session");
 
                 try {
-                    String waypoints = "";
-                    for (int i = 0; i < sessionModel.getRoute().getWaypoints().size(); i++) {
-                        if(i == sessionModel.getRoute().getWaypoints().size() - 1){
-                            waypoints = waypoints + sessionModel.getRoute().getWaypoints().get(i);
-                        }else{
-                            waypoints = waypoints + sessionModel.getRoute().getWaypoints().get(i) + ",";
-                        }
-                    }
 
-                    DirectionsResult result = DirectionsApi.newRequest(getGeoContext())
+                    Log.e("Origin", sessionModel.getRoute().getOrigin_lat() + "," + sessionModel.getRoute().getOrigin_lng());
+                    Log.e("Destination", sessionModel.getRoute().getDestination_lat() + "," + sessionModel.getRoute().getDestination_lng());
+                    DirectionsApiRequest request = DirectionsApi.newRequest(getGeoContext())
                             .mode(TravelMode.DRIVING)
                             .origin(sessionModel.getRoute().getOrigin_lat() + "," + sessionModel.getRoute().getOrigin_lng())
-                            .destination(sessionModel.getRoute().getDestination_lat() + "," + sessionModel.getRoute().getDetination_lng())
-                            .waypoints(waypoints)
-                            .departureTime(new DateTime())
-                            .await();
+                            .destination(sessionModel.getRoute().getDestination_lat() + "," + sessionModel.getRoute().getDestination_lng())
+                            .departureTime(new DateTime());
+
+                    String waypoints = "place_id:";
+                    for (int i = 0; i < sessionModel.getRoute().getWaypoints().size(); i++) {
+                        request.waypoints("place_id:" + sessionModel.getRoute().getWaypoints().get(i));
+                    }
+
+                    DirectionsResult result = request.await();
 
                     List<LatLng> decodedPath = PolyUtil.decode(result.routes[0].overviewPolyline.getEncodedPath());
-                    googleMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+                    Log.e("LatLngs", decodedPath.toString());
+                    googleMap.addPolyline(new PolylineOptions().addAll(decodedPath).color(getActivity().getResources().getColor(R.color.red)));
+
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    builder.include(new LatLng(Double.parseDouble(sessionModel.getRoute().getOrigin_lat()), Double.parseDouble(sessionModel.getRoute().getOrigin_lng())));
+                    builder.include(new LatLng(Double.parseDouble(sessionModel.getRoute().getDestination_lat()), Double.parseDouble(sessionModel.getRoute().getDestination_lng())));
+                    LatLngBounds bounds = builder.build();
+                    int padding = 10; // offset from edges of the map in pixels
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                    googleMap.animateCamera(cu);
                 } catch (ApiException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -201,7 +212,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     public void onClick(View view) {
         if(view.equals(startSession)){
             Intent startStartSessionActivity = new Intent(getActivity(), StartSession.class);
-            getActivity().startActivityForResult(startStartSessionActivity, 1);
+            startActivityForResult(startStartSessionActivity, 1);
         }
     }
 

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.se.omapi.Session;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -65,7 +66,7 @@ public class StartSession extends AppCompatActivity implements View.OnClickListe
         }else if(view.equals(vehicle_info)){
             Intent intent = new Intent(this,SelectVehicle.class);
             startActivityForResult(intent, 2);
-        }else if(view.equals(btnStart)){
+        }else if(view.equals(btnStart)) {
             if(route == null){
                 alertDialog.setTitle(getApplicationContext().getString(R.string.routeisrequired));
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getApplicationContext().getString(R.string.ok),
@@ -89,7 +90,7 @@ public class StartSession extends AppCompatActivity implements View.OnClickListe
                 param.put("route_id", route.getId());
                 param.put("vehicle_id", vehicle.getId());
 
-                Requestor sessionRequest = new Requestor("api/sessions/store", param, this){
+                Requestor sessionRequest = new Requestor("api/sessions/store", param, this) {
                     @Override
                     public void preExecute() {
                         btnStart.setText(R.string.please_wait);
@@ -122,14 +123,18 @@ public class StartSession extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void saveSession(JSONObject response){
+    private void killActivity() {
+        finish();
+    }
+
+    private void saveSession(JSONObject response){
         Gson gson = new Gson();
         String jsonOutput = null;
         try {
-            jsonOutput = response.getJSONArray("session").toString();
-            Type listType = new TypeToken<List<VehicleModel>>(){}.getType();
+            jsonOutput = response.getJSONObject("session").toString();
+            Type listType = new TypeToken<SessionModel>(){}.getType();
             SessionModel sessionModel = gson.fromJson(jsonOutput, listType);
-
+            Log.e("Waypoints", route.getWaypoints().toString());
             sessionModel.setRoute(route);
 
             Gson gson2 = new Gson();
@@ -141,7 +146,7 @@ public class StartSession extends AppCompatActivity implements View.OnClickListe
             Intent data = new Intent();
             data.putExtra("session", sessionModel);
             setResult(RESULT_OK,data);
-            finish();
+            killActivity();
         } catch (JSONException e) {
             e.printStackTrace();
         }

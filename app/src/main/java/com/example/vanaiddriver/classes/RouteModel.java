@@ -10,8 +10,9 @@ public class RouteModel implements Serializable {
     private String origin_lat;
     private String origin_lng;
     private String destination_lat;
-    private String detination_lng;
+    private String destination_lng;
     private Integer company_id;
+    private ArrayList waypoints;
 
     public Integer getId() {
         return id;
@@ -65,12 +66,12 @@ public class RouteModel implements Serializable {
         this.destination_lat = destination_lat;
     }
 
-    public String getDetination_lng() {
-        return detination_lng;
+    public String getDestination_lng() {
+        return destination_lng;
     }
 
-    public void setDetination_lng(String detination_lng) {
-        this.detination_lng = detination_lng;
+    public void setDestination_lng(String detination_lng) {
+        this.destination_lng = detination_lng;
     }
 
     public void setCompany_id(Integer company_id) {
@@ -84,6 +85,4 @@ public class RouteModel implements Serializable {
     public void setWaypoints(ArrayList waypoints) {
         this.waypoints = waypoints;
     }
-
-    public ArrayList waypoints;
 }

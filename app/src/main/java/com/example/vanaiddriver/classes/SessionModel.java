@@ -9,6 +9,7 @@ public class SessionModel implements Serializable {
     private Integer route_id;
     private Integer company_id;
     private String status;
+    private RouteModel route;
 
     public RouteModel getRoute() {
         return route;
@@ -17,8 +18,6 @@ public class SessionModel implements Serializable {
     public void setRoute(RouteModel route) {
         this.route = route;
     }
-
-    private RouteModel route;
 
     public Integer getId() {
         return id;
