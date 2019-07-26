@@ -62,6 +62,7 @@ import com.google.maps.model.TravelMode;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -124,8 +125,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     DirectionsResult result = request.await();
 
                     List<LatLng> decodedPath = PolyUtil.decode(result.routes[0].overviewPolyline.getEncodedPath());
-                    Log.e("LatLngs", decodedPath.toString());
+                    List<com.google.maps.model.LatLng> converted = new ArrayList<>();
+                    for(int i = 0; i < decodedPath.size(); i++){
+                        converted.add(new com.google.maps.model.LatLng(decodedPath.get(i).latitude, decodedPath.get(i).longitude));
+                    }
+
                     googleMap.addPolyline(new PolylineOptions().addAll(decodedPath).color(getActivity().getResources().getColor(R.color.red)));
+
+                    com.google.maps.model.LatLng[] latLngs = converted.toArray(new com.google.maps.model.LatLng[converted.size()]);
+                    SnappedPoint[] interpolated = RoadsApi.snapToRoads(getGeoContext(), true, latLngs).await();
+                    for(int i = 0; i < interpolated.length; i++){
+                        Log.e("LatLngs", interpolated[i].toString());
+                    }
 
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
                     builder.include(new LatLng(Double.parseDouble(sessionModel.getRoute().getOrigin_lat()), Double.parseDouble(sessionModel.getRoute().getOrigin_lng())));
