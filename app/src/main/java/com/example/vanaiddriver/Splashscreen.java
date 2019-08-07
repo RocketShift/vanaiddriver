@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -18,6 +20,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.example.vanaiddriver.classes.Requestor;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Splashscreen extends AppCompatActivity {
     public void onAttachedToWindow() {
@@ -57,6 +66,23 @@ public class Splashscreen extends AppCompatActivity {
                         sleep(100);
                         waited += 100;
                     }
+
+                    FirebaseInstanceId.getInstance().getInstanceId()
+                            .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                    if (!task.isSuccessful()) {
+                                        Log.w("Firebase", "getInstanceId failed", task.getException());
+                                        return;
+                                    }
+
+                                    Map<String, Object> param = new LinkedHashMap<>();
+                                    param.put("fcm_token", task.getResult().getToken());
+
+                                    Requestor fcmRequestor = new Requestor("api/fcm/save", param, getApplicationContext());
+                                    fcmRequestor.execute();
+                                }
+                            });
                 } catch (InterruptedException e) {
                     // do nothing
                 } finally {

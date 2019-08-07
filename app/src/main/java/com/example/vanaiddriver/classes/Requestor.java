@@ -58,13 +58,12 @@ public class Requestor {
         Boolean network = isNetworkAvailable();
         if (network == true) {
             WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-//            WifiInfo wInfo = wifiManager.getConnectionInfo();
-//            String macAddress = wInfo.getMacAddress();
-//            if(macAddress.equals("02:00:00:00:00:00")){
-//                macAddress = getWifiMacAddress();
-//            }
-//            param.put("macaddress", macAddress);
-            param.put("type", "driver");
+            WifiInfo wInfo = wifiManager.getConnectionInfo();
+            String macAddress = wInfo.getMacAddress();
+            if(macAddress.equals("02:00:00:00:00:00")){
+                macAddress = getWifiMacAddress();
+            }
+            param.put("macaddress", macAddress);
             if (isRunning == true && asynchronus == true) {
                 new Ajaxer().execute();
             }else{
