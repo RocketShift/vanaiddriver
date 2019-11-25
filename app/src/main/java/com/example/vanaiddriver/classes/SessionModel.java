@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class SessionModel implements Serializable {
     private Integer id;
     private Integer user_id;
+    private Integer device_id;
     private Integer vehicle_id;
     private Integer route_id;
     private Integer company_id;
@@ -65,5 +66,13 @@ public class SessionModel implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getDevice_id() {
+        return device_id;
+    }
+
+    public void setDevice_id(Integer device_id) {
+        this.device_id = device_id;
     }
 }
